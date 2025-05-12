@@ -20,6 +20,9 @@ export const getAllNote = async (req, res) => {
       const sortby = req.query.sort.split(',').join(' ')
       query.sort(sortby)
     }
+    else{
+      query = query.sort('-_id')
+    }
 
     // EXECUTE THE QUERY 
     const note = await query;
