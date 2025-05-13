@@ -6,35 +6,39 @@ export const getAllNote = async (req, res) => {
   try {
     // BUILD THE QUERY
     // 1) Filltaring
-    const queryObg = {...req.query};
-    const excludeQuery = ['sort', 'page', 'limit']
-    excludeQuery.forEach(el => delete queryObg[el])
+    const queryObg = { ...req.query };
+    const excludeQuery = ["sort", "page", "limit" ,'fields'];
+    excludeQuery.forEach((el) => delete queryObg[el]);
 
     // 2) Filltaring
-    let queryStr = JSON.stringify(queryObg)
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`)   
+    let queryStr = JSON.stringify(queryObg);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-    let query =  Note.find(JSON.parse(queryStr));
+    let query = Note.find(JSON.parse(queryStr));
     // SORTING BY QYERY
-    if(req.query.sort){
-      const sortby = req.query.sort.split(',').join(' ')
-      query.sort(sortby)
+    if (req.query.sort) {
+      const sortby = req.query.sort.split(",").join(" ");
+      query.sort(sortby);
+    } else {
+      query = query.sort("-_id");
     }
-    else{
-      query = query.sort('-_id')
+    // 3) SELECT FIELDS LIMITING
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query.select("-_v");
     }
-
-    // EXECUTE THE QUERY 
+    console.log(query)
+    // EXECUTE THE QUERY
     const note = await query;
     // SEND RESPONSE
-    res
-      .status(201)
-      .json({
-        status: "Success",
-        msg: "here is your note ..",
-        length: note.length,
-        data: { note },
-      });
+    res.status(201).json({
+      status: "Success",
+      msg: "here is your note ..",
+      length: note.length,
+      data: { note },
+    });
   } catch (err) {
     res.status(500).json({
       status: "Error",
@@ -82,12 +86,10 @@ export const updateNote = async (req, res) => {
 export const deleteNote = async (req, res) => {
   try {
     const note = await Note.findByIdAndDelete(req.params.id);
-    res
-      .status(201)
-      .json({
-        status: "Success",
-        msg: `deletd the note of this id : ${req.params.id}`,
-      });
+    res.status(201).json({
+      status: "Success",
+      msg: `deletd the note of this id : ${req.params.id}`,
+    });
   } catch (err) {
     res.status(500),
       json({
