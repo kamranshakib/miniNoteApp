@@ -1,13 +1,13 @@
 import expres, { json } from "express";
 import Note from "../models/tourModel.js";
-import { Query } from "mongoose";
+
 
 export const getAllNote = async (req, res) => {
   try {
     // BUILD THE QUERY
     // 1) Filltaring
     const queryObg = { ...req.query };
-    const excludeQuery = ["sort", "page", "limit" ,'fields'];
+    const excludeQuery = ["sort", "page", "limit", "fields"];
     excludeQuery.forEach((el) => delete queryObg[el]);
 
     // 2) Filltaring
@@ -29,7 +29,7 @@ export const getAllNote = async (req, res) => {
     } else {
       query.select("-_v");
     }
-    console.log(query)
+    
     // EXECUTE THE QUERY
     const note = await query;
     // SEND RESPONSE
