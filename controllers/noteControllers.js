@@ -31,11 +31,16 @@ export const getAllNote = async (req, res) => {
     }
 
     // Skip and limit
-    const page = req.query.page * 1 | 1;
-    const limit = req.query.limit * 1;
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
     const skip = (page - 1) * limit;
 
     query = query.skip(skip).limit(limit)
+
+   if(req.query.page){
+     const numDoc = await Note.countDocuments();
+     if(skip > numDoc) throw new Error ('This page does not exist.')
+   }
 
     // EXECUTE THE QUERY
     const note = await query;
