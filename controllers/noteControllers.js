@@ -29,7 +29,14 @@ export const getAllNote = async (req, res) => {
     } else {
       query.select("-_v");
     }
-    
+
+    // Skip and limit
+    const page = req.query.page * 1 | 1;
+    const limit = req.query.limit * 1;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit)
+
     // EXECUTE THE QUERY
     const note = await query;
     // SEND RESPONSE
