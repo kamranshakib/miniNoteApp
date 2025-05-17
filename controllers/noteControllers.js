@@ -1,49 +1,58 @@
 import expres, { json } from "express";
 import Note from "../models/tourModel.js";
+import APIfeatures, * as ApiFeatures from "../utils/ApiFeatures.js";
+
 
 
 export const getAllNote = async (req, res) => {
   try {
     // BUILD THE QUERY
     // 1) Filltaring
-    const queryObg = { ...req.query };
-    const excludeQuery = ["sort", "page", "limit", "fields"];
-    excludeQuery.forEach((el) => delete queryObg[el]);
+    // const queryObg = { ...req.query };
+    // const excludeQuery = ["sort", "page", "limit", "fields"];
+    // excludeQuery.forEach((el) => delete queryObg[el]);
 
-    // 2) Filltaring
-    let queryStr = JSON.stringify(queryObg);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // // 2) Filltaring
+    // let queryStr = JSON.stringify(queryObg);
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-    let query = Note.find(JSON.parse(queryStr));
+    // let query = Note.find(JSON.parse(queryStr));
+
     // SORTING BY QYERY
-    if (req.query.sort) {
-      const sortby = req.query.sort.split(",").join(" ");
-      query.sort(sortby);
-    } else {
-      query = query.sort("-_id");
-    }
-    // 3) SELECT FIELDS LIMITING
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query.select("-_v");
-    }
+
+    // if (req.query.sort) {
+    //   const sortby = req.query.sort.split(",").join(" ");
+    //   query.sort(sortby);
+    // } else {
+    //   query = query.sort("-_id");
+    // }
+    // // 3) SELECT FIELDS LIMITING
+    // if (req.query.fields) {
+    //   const fields = req.query.fields.split(",").join(" ");
+    //   query = query.select(fields);
+    // } else {
+    //   query.select("-_v");
+    // }
 
     // Skip and limit
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
+    //  paginnation
+    //   const page = req.query.page * 1 || 1;
+    //   const limit = req.query.limit * 1 || 100;
+    //   const skip = (page - 1) * limit;
 
-    query = query.skip(skip).limit(limit)
+    //   query = query.skip(skip).limit(limit)
 
-   if(req.query.page){
-     const numDoc = await Note.countDocuments();
-     if(skip > numDoc) throw new Error ('This page does not exist.')
-   }
-
+    //  if(req.query.page){
+    //    const numDoc = await Note.countDocuments();
+    //    if(skip > numDoc) throw new Error ('This page does not exist.')
+    //  }
+    const features = new APIfeatures(Note.find(), req.query)
+      .fillter()
+      .sotring()
+      .paginate()
+      .limiting()
     // EXECUTE THE QUERY
-    const note = await query;
+    const note = await features.query;
     // SEND RESPONSE
     res.status(201).json({
       status: "Success",
