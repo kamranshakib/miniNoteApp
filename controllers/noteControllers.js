@@ -119,3 +119,38 @@ export const deleteNote = async (req, res) => {
       });
   }
 };
+
+
+export const NoteStats = async (req, res) => {
+
+  try {
+
+    const stats = await Note.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.2 } }
+      },
+      {
+        $group: {
+          _id: null,
+          avgRatin: { $avg: '$ratingsAverage' },
+          maxRatin: { $max: '$ratingsAverage' },
+          minRatin: { $min: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' }
+        }
+      }
+    ])
+    res
+      .status(201)
+      .json({ status: "Success", msg: " the note is saved.", data: { stats } });
+
+  } catch (err) {
+    res.status(500),
+      json({
+        status: "field",
+        msg: "something went wrong while deleting the note.",
+      });
+  }
+
+}
