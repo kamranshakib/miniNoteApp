@@ -131,7 +131,9 @@ export const NoteStats = async (req, res) => {
       },
       {
         $group: {
-          _id: null,
+          _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRating: { $sum: '$ratingsQuantity' },
           avgRatin: { $avg: '$ratingsAverage' },
           maxRatin: { $max: '$ratingsAverage' },
           minRatin: { $min: '$ratingsAverage' },
@@ -139,11 +141,19 @@ export const NoteStats = async (req, res) => {
           minPrice: { $min: '$price' },
           maxPrice: { $max: '$price' }
         }
-      }
+      },
+      {
+        $sort: { avgPrice: 1 }
+      },
+      // {
+      //   $match: {
+      //     _id: {$ne: 'easy'}    easy _id it is not include *
+      //   }
+      // }
     ])
     res
       .status(201)
-      .json({ status: "Success", msg: " the note is saved.", data: { stats } });
+      .json({ status: "Success", msg: " the note is saved.", length: stats.length, data: { stats } });
 
   } catch (err) {
     res.status(500),
