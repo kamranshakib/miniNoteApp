@@ -79,6 +79,14 @@ const noteSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     }
+  },
+{
+  toJSON:{virtuals: true},
+  toObject:{virtuals: true}
+})
+
+  noteSchema.virtual('durationWeeks').get(function(){
+    return this.duration / 7;
   })
 
 const noteModel = mongoose.model("Notes", noteSchema);
