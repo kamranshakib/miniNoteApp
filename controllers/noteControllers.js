@@ -1,5 +1,6 @@
 import expres, { json } from "express";
 import Note from "../models/tourModel.js";
+import userModel from '../models/userModel.js'
 import APIfeatures, * as ApiFeatures from "../utils/ApiFeatures.js";
 
 
@@ -163,4 +164,22 @@ export const NoteStats = async (req, res) => {
       });
   }
 
+}
+
+export const singnup = async (req,res)=>{
+   try {
+     const newUser = await userModel.create(req.body);
+    res.status(200).json({
+        state:'Success',
+        data:{
+            User: newUser
+        }
+    })
+   } catch (error) {
+    res.status(500).json({
+        state:'Field',
+        data: 'someting was wrong while saving to database.',
+        error:error
+    })
+   }
 }

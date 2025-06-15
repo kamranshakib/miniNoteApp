@@ -9,6 +9,7 @@ Router.post('/',noteController.createNote)
 Router.patch('/:id',noteController.updateNote)
 Router.delete('/:id',noteController.deleteNote)
 Router.get('/NoteStats',noteController.NoteStats)
+Router.post('/signup',noteController.singnup)
 
 
 export default Router;
