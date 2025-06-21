@@ -1,6 +1,5 @@
 import expres, { json } from "express";
 import Note from "../models/tourModel.js";
-import userModel from '../models/userModel.js'
 import APIfeatures, * as ApiFeatures from "../utils/ApiFeatures.js";
 
 

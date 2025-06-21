@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-mongoose
-  .connect("mongodb://localhost:27017/Note")
-  .then(() => {
-    console.log("connectd to database ...");
-  })
-  .catch((err) => {
-    console.log("Error: disconnected to database ...");
-  });
+// mongoose
+//   .connect("mongodb://localhost:27017/Note")
+//   .then(() => {3
+//     console.log("connectd to database ...");
+//   })
+//   .catch((err) => {
+//     console.log("Error: disconnected to database ...");
+//   });
 
 const noteSchema = new mongoose.Schema({
 

@@ -1,15 +1,13 @@
 import mongoose from 'mongoose'
 import validator from 'validator'
+import bcrypt from 'bcrypt'
 
 mongoose.connect('mongodb://localhost:27017/UserTour')
     .then(() => console.log('Conneted to DB'))
     .catch((err) => console.log('Error while conneted to DB'))
 
 const UserScema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: [true, 'please tell us your name']
-    },
+   
     email: {
         type: String,
         required: true,
@@ -21,7 +19,7 @@ const UserScema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "please provide a password"],
-        minlength: 8
+        minlength: 8,
     },
     confirmPassword: {
         type: String,
@@ -32,14 +30,15 @@ const UserScema = new mongoose.Schema({
             },
             message: 'passwords are not same'
         }
-    },
+    }, 
 
 })
 
 UserScema.pre('save', (next) => {
 
     if (!this.isModified('password')) return next();
-    this.password = bcrypy.hash(this.password, 12)
+
+    this.password = bcrypt.hash(this.password, 12)
     this.confirmPassword = undefined;
 })
 
