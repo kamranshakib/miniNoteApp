@@ -1,18 +1,18 @@
 import mongoose from 'mongoose'
 import validator from 'validator'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 mongoose.connect('mongodb://localhost:27017/UserTour')
     .then(() => console.log('Conneted to DB'))
     .catch((err) => console.log('Error while conneted to DB'))
 
-const UserScema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
    
     email: {
         type: String,
         required: true,
         unique: true,
-        lowecase: true,
+        lowercase: true,
         validate: [validator.isEmail, "please provide a valid email"]
     },
     photo: String,
@@ -34,13 +34,14 @@ const UserScema = new mongoose.Schema({
 
 })
 
-UserScema.pre('save', (next) => {
+UserSchema.pre('save',async function(next)  {
 
     if (!this.isModified('password')) return next();
 
-    this.password = bcrypt.hash(this.password, 12)
+    this.password = await bcrypt.hash(this.password, 12)
     this.confirmPassword = undefined;
+    next()
 })
 
-const User = mongoose.model('UserTour', UserScema)
+const User = mongoose.model('UserTour', UserSchema)
 export default User;

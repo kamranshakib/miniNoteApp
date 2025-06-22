@@ -2,11 +2,19 @@ import User from '../models/userModel.js'
 
 
 export const singnup = async (req,res)=>{
-  
+  try {
+    
      const newUser = await User.create(req.body);
      res.status(200).json({
         data: newUser
      })
+  } catch (error) {
+     res.status(500).json({
+        state:'Field',
+        data: 'someting was wrong while login user',
+        error:error
+    })
+  }
     
    
 }
