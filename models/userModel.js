@@ -20,6 +20,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, "please provide a password"],
         minlength: 8,
+        select: false
     },
     confirmPassword: {
         type: String,
@@ -42,6 +43,11 @@ UserSchema.pre('save',async function(next)  {
     this.confirmPassword = undefined;
     next()
 })
+
+UserSchema.methods.correctPassword = async function (condidatePassword,userPassword){
+    return await bcrypt.compare(condidatePassword,userPassword)
+
+}
 
 const User = mongoose.model('UserTour', UserSchema)
 export default User;

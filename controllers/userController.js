@@ -1,5 +1,7 @@
 import User from '../models/userModel.js'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 
@@ -24,12 +26,12 @@ export const getAlluser = async (req,res)=>{
         
     }
 }
-
+     // sign up users 
 export const singnup = async (req,res)=>{
   try {
     
      const newUser = await User.create(req.body);
-     const token = jwt.sign({id: newUser._id},"kamranshakib",{expiresIn: '1d'})
+     const token = jwt.sign({id: newUser._id},process.env.TOKEN_SECRET,{expiresIn: '1d'})
      res.status(200).json({
         data: newUser,
         token
@@ -37,19 +39,26 @@ export const singnup = async (req,res)=>{
   } catch (error) {
      res.status(500).json({
         state:'Field',
-        data: 'someting was wrong while login user',
+        data: 'someting was wrong while sign up user',
         error:error 
     })
   }
     
-   
+    
 }
-
+    // login users     
  
-export const login = async (req,res , next)=>{
-    try {
+
+    //  cheak that there is email or password ,
+    //  cheak is there email in database
+    //  cheak is password correct
+    //  compare hash password
+
+export const login = async (req,res,next)=>{
+ 
         
-        const {email,password} = req.body;
+       try {
+         const {email,password} = req.body;
         // 1): cheak exist email and password
         if(!email || !password){
             next(res.status(500).json({
@@ -59,16 +68,28 @@ export const login = async (req,res , next)=>{
         }
 
         // 2): cheak is there same email in DB
+         const user =await User.findOne({email}).select('+password');
+         const correct =user.correctPassword(password, user.password)
+         
+
+         if(!user || !correct) next('please provide a valid user or password')
+          
+          res.status(201)
+          .json({
+            msg:'success',
+            data: user
+          })  
+       } catch (error) {
+        res.status(500)
+        .json({
+            error
+        })
         
+       }
+
+         
     //   const cheakEmail = await  user.findOne({email}).select(+password);
       
 
-    } catch (error) {
-          res.status(500).json({
-        state:'Field',
-        data: 'someting was wrong while login user',
-        error:error
-    })
-        
-    }
+    
 }
