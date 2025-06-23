@@ -12,6 +12,7 @@ Router.delete('/:id',noteController.deleteNote)
 Router.get('/NoteStats',noteController.NoteStats)
 Router.post('/signup',userController.singnup)
 Router.post('/login',userController.login)
+Router.get('/getUsers',userController.getAlluser)
 
 
 export default Router;
