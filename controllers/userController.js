@@ -3,7 +3,9 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-
+const signToken  = id => {
+   return jwt.sign({id},process.env.TOKEN_SECRET,{expiresIn: '1d'})
+}
 
 
 // get all users
@@ -31,7 +33,8 @@ export const singnup = async (req,res)=>{
   try {
     
      const newUser = await User.create(req.body);
-     const token = jwt.sign({id: newUser._id},process.env.TOKEN_SECRET,{expiresIn: '1d'})
+
+     const token = signToken(newUser._id)
      res.status(200).json({
         data: newUser,
         token
@@ -55,9 +58,7 @@ export const singnup = async (req,res)=>{
     //  compare hash password
 
 export const login = async (req,res,next)=>{
- 
-        
-       try {
+       
          const {email,password} = req.body;
         // 1): cheak exist email and password
         if(!email || !password){
@@ -69,24 +70,19 @@ export const login = async (req,res,next)=>{
 
         // 2): cheak is there same email in DB
          const user =await User.findOne({email}).select('+password');
-         const correct =user.correctPassword(password, user.password)
-         
-
-         if(!user || !correct) next('please provide a valid user or password')
-          
-          res.status(201)
-          .json({
-            msg:'success',
-            data: user
-          })  
-       } catch (error) {
-        res.status(500)
-        .json({
-            error
-        })
+         const correct =await user.correctPassword(password, user.password)
         
-       }
+         if(!user || !correct){
+            return next('please provide a valid user or password')
 
+         }
+         const token = signToken(user._id)
+         res.status(201).json({
+            status:"success",
+            token
+         })
+       
+        
          
     //   const cheakEmail = await  user.findOne({email}).select(+password);
       
